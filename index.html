@@ -20,6 +20,18 @@
         font-family: Arial, sans-serif;
     }
 
+    .main-content {
+  overflow: auto; /* Ensure content is scrollable */
+  padding: 20px; /* Adjust as necessary */
+}
+
+@media (max-width: 768px) {
+  .feature-section {
+    padding: 10px; /* Reduce padding for mobile */
+  }
+}
+
+
     /* Sidebar styles */
     #sidebar {
         width: 250px;
@@ -113,8 +125,15 @@
         <a href="#" class="sidebar-item" onclick="showSection('tech-updates')">
             <i class="fas fa-bell"></i> Tech Updates
         </a>
+        
+        <a href="#" class="sidebar-item" onclick="showSection('my-notes')">
+                <i class="fas fa-sticky-note"></i> My Notes
+            </a>
+        <a href="#" class="sidebar-item" onclick="showSection('themes')">
+            <i class="fas fa-paint-brush"></i> Themes
+
         <a href="#" class="sidebar-item" onclick="logout()">
-            <i class="fas fa-sign-out-alt"></i> Logout
+                <i class="fas fa-sign-out-alt"></i> Logout   
         </a>
     </div>
 </body>
@@ -440,6 +459,7 @@
 
       /* Target the button in the Tech Update section */
 .tech-update-btn {
+   display: flex
     background-color: blue; /* Set the button color to blue */
     color: white; /* Text color */
     border-radius: 15px; /* Rounded corners */
@@ -455,7 +475,7 @@
     background-color: darkblue; /* Darker shade of blue on hover */
         }
 
-    }
+    
   </style>
 </head>
 <body>
@@ -482,6 +502,10 @@
     <a href="#" onclick="showSection('worksheet-generator')">Worksheet Generator</a>
     <a href="#" onclick="showSection('quiz-generator')">Quiz Generator</a>
     <a href="#" onclick="showSection('tech-updates')">Tech Updates</a>
+    <a href="#" onclick="showSection('themes')">Themes</a>
+    <a href="#" onclick="showSection('my-notes')">My notes</a>
+    
+
     <button class="logout-btn" onclick="logout()">Logout</button>
   </div>
 
@@ -590,10 +614,95 @@
       <div id="updateMessage"></div>
     </div>
 
-  </div>
+      <!-- My Notes Section --> 
+  <div id="my-notes" class="feature-section">
+        <h2>My Notes</h2>
+        <input type="text" id="noteName" placeholder="Note Name">
+        <textarea id="noteContent" placeholder="Write your note here..."></textarea>
+        <button onclick="addNote()">Save Note</button>
+        <ul id="notesList"></ul>
+    </div>
 
+  <!--Themes Section -->
+  
+      <h2>Themes</h2>
+        <button onclick="showThemeDialog()">Choose Theme</button>
+    </div>
+
+    <div id="themeDialog" style="display: none;">
+        <p>There are some bugs in these theme options, and they will be fixed in the next V3 update.</p>
+        <button onclick="closeThemeDialog()">Close</button>
+    </div>
+</div>
+  
   <script>
-    // Authentication Functions
+  
+  // Notes Functionality
+let notes = [];
+
+// Load notes from localStorage
+function loadNotes() {
+  const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
+  if (loggedInUser) {
+    notes = JSON.parse(localStorage.getItem(`${loggedInUser.username}_notes`)) || [];
+  }
+}
+
+// Save notes to localStorage
+function saveNotes() {
+  const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
+  if (loggedInUser) {
+    localStorage.setItem(`${loggedInUser.username}_notes`, JSON.stringify(notes));
+  }
+}
+
+// Add Note
+function addNote() {
+  const noteName = document.getElementById('noteName').value.trim();
+  const noteContent = document.getElementById('noteContent').value.trim();
+
+  if (noteName && noteContent) {
+    const note = { name: noteName, content: noteContent };
+    notes.push(note);
+    saveNotes();
+    renderNotes();
+    document.getElementById('noteName').value = '';
+    document.getElementById('noteContent').value = '';
+  } else {
+    alert('Both fields are required.');
+  }
+}
+
+// Render Notes
+function renderNotes() {
+  const notesList = document.getElementById('notesList');
+  notesList.innerHTML = '';
+
+  notes.forEach(note => {
+    const noteItem = document.createElement('li');
+    noteItem.innerHTML = `<strong>${sanitize(note.name)}</strong>: ${sanitize(note.content)}`;
+    notesList.appendChild(noteItem);
+  });
+}
+
+// Show Notes on Load
+function initNotes() {
+  loadNotes();
+  renderNotes();
+}
+
+   // Show Theme Dialog
+function showThemeDialog() {
+  document.getElementById('themeDialog').style.display = 'block';
+}
+
+// Close Theme Dialog
+function closeThemeDialog() {
+  document.getElementById('themeDialog').style.display = 'none';
+}
+
+
+// Authentication Functions
     const authContainer = document.getElementById('auth-container');
     const authForm = document.getElementById('auth-form');
     const authTitle = document.getElementById('auth-title');
