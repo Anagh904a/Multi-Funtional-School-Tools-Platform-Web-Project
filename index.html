@@ -615,81 +615,83 @@
     </div>
 
       <!-- My Notes Section --> 
-  <div id="my-notes" class="feature-section">
-        <h2>My Notes</h2>
-        <input type="text" id="noteName" placeholder="Note Name">
-        <textarea id="noteContent" placeholder="Write your note here..."></textarea>
-        <button onclick="addNote()">Save Note</button>
-        <ul id="notesList"></ul>
-    </div>
+      <div id="my-notes" class="feature-section">
+    <h2>My Notes</h2>
+    <input type="text" id="noteName" placeholder="Note Title" style="padding: 10px; border: 1px solid #ddd; border-radius: 4px; width: calc(100% - 22px); margin-bottom: 10px;">
+    <textarea id="noteContent" placeholder="Write your note here..." style="padding: 10px; border: 1px solid #ddd; border-radius: 4px; width: calc(100% - 22px); height: 100px;"></textarea>
+    <button onclick="addNote()" style="padding: 10px 20px; background-color: #007BFF; color: white; border: none; border-radius: 4px; cursor: pointer; margin-top: 10px;">Save Note</button>
+    <ul id="notesList" style="margin-top: 20px; list-style-type: none;"></ul>
+</div>
 
-  <!--Themes Section -->
-  
-      <h2>Themes</h2>
-        <button onclick="showThemeDialog()">Choose Theme</button>
-    </div>
+  <!-- Themes Section -->
+<div id="themes" class="feature-section">
+    <h2>Themes</h2>
+    <button onclick="showThemeDialog()" style="padding: 10px 20px; background-color: #007BFF; color: white; border: none; border-radius: 4px; cursor: pointer;">Choose Theme</button>
+</div>
 
-    <div id="themeDialog" style="display: none;">
-        <p>There are some bugs in these theme options, and they will be fixed in the next V3 update.</p>
-        <button onclick="closeThemeDialog()">Close</button>
-    </div>
+<div id="themeDialog" style="display: none;">
+    <p>There are some bugs in these theme options, and they will be fixed in the next V3 update.</p>
+    <button onclick="closeThemeDialog()" style="padding: 10px 20px; background-color: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer;">Close</button>
 </div>
   
   <script>
   
-  // Notes Functionality
+    // Notes Functionality
 let notes = [];
 
 // Load notes from localStorage
 function loadNotes() {
-  const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
-  if (loggedInUser) {
-    notes = JSON.parse(localStorage.getItem(`${loggedInUser.username}_notes`)) || [];
-  }
+    const loggedInUser  = JSON.parse(localStorage.getItem('loggedInUser '));
+    if (loggedInUser ) {
+        notes = JSON.parse(localStorage.getItem(`${loggedInUser .username}_notes`)) || [];
+    }
 }
 
 // Save notes to localStorage
 function saveNotes() {
-  const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
-  if (loggedInUser) {
-    localStorage.setItem(`${loggedInUser.username}_notes`, JSON.stringify(notes));
-  }
+    const loggedInUser  = JSON.parse(localStorage.getItem('loggedInUser '));
+    if (loggedInUser ) {
+        localStorage.setItem(`${loggedInUser .username}_notes`, JSON.stringify(notes));
+    }
 }
 
 // Add Note
 function addNote() {
-  const noteName = document.getElementById('noteName').value.trim();
-  const noteContent = document.getElementById('noteContent').value.trim();
+    const noteName = document.getElementById('noteName').value.trim();
+    const noteContent = document.getElementById('noteContent').value.trim();
 
-  if (noteName && noteContent) {
-    const note = { name: noteName, content: noteContent };
-    notes.push(note);
-    saveNotes();
-    renderNotes();
-    document.getElementById('noteName').value = '';
-    document.getElementById('noteContent').value = '';
-  } else {
-    alert('Both fields are required.');
-  }
+    if (noteName && noteContent) {
+        const note = { name: noteName, content: noteContent };
+        notes.push(note);
+        saveNotes();
+        renderNotes();
+        document.getElementById('noteName').value = '';
+        document.getElementById('noteContent').value = '';
+    } else {
+        alert('Both fields are required.');
+    }
 }
 
 // Render Notes
 function renderNotes() {
-  const notesList = document.getElementById('notesList');
-  notesList.innerHTML = '';
+    const notesList = document.getElementById('notesList');
+    notesList.innerHTML = '';
 
-  notes.forEach(note => {
-    const noteItem = document.createElement('li');
-    noteItem.innerHTML = `<strong>${sanitize(note.name)}</strong>: ${sanitize(note.content)}`;
-    notesList.appendChild(noteItem);
-  });
+    notes.forEach(note => {
+        const noteItem = document.createElement('li');
+        noteItem.innerHTML = `<strong>${sanitize(note.name)}</strong>: ${sanitize(note.content)}`;
+        notesList.appendChild(noteItem);
+    });
 }
 
 // Show Notes on Load
 function initNotes() {
-  loadNotes();
-  renderNotes();
+    loadNotes();
+    renderNotes();
 }
+
+// Initialize notes on page load
+window.onload = initNotes;
 
    // Show Theme Dialog
 function showThemeDialog() {
