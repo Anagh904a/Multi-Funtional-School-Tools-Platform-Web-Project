@@ -132,10 +132,128 @@
         <a href="#" class="sidebar-item" onclick="showSection('themes')">
             <i class="fas fa-paint-brush"></i> Themes
 
-        <a href="#" class="sidebar-item" onclick="logout()">
+            <a href="#" class="sidebar-item" onclick="showSection('shared-tasks')">
+              <i class="fas fa-share-alt"></i> Shared Tasks
+          </a>
+          <a href="#" class="sidebar-item" onclick="showSection('shared-notes')">
+              <i class="fas fa-share-square"></i> Shared Notes
+         
+            <a href="#" class="sidebar-item" onclick="logout()">
                 <i class="fas fa-sign-out-alt"></i> Logout   
         </a>
     </div>
+
+    <script type="module">
+      // Import the functions you need from the SDKs you need
+      
+      import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+      import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+      import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-analytics.js";
+      // TODO: Add SDKs for Firebase products that you want to use
+      // https://firebase.google.com/docs/web/setup#available-libraries
+    
+      // Your web app's Firebase configuration
+      // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+      const firebaseConfig = {
+        apiKey: "AIzaSyBnxKoEbh-xOHn_ogIHAt68HSTR5EOcSuU",
+        authDomain: "listvista-5ce07.firebaseapp.com",
+        projectId: "listvista-5ce07",
+        storageBucket: "listvista-5ce07.appspot.com",
+        messagingSenderId: "516531579392",
+        appId: "1:516531579392:web:1737b6343f02fc66ae86e5",
+        measurementId: "G-4YEWQF9LE7"
+      };
+    
+      // Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+      const analytics = getAnalytics(app);
+      const db = getFirestore(app);
+
+      // Authentication Functions
+const authContainer = document.getElementById('auth-container');
+const authForm = document.getElementById('auth-form');
+const authTitle = document.getElementById('auth-title');
+const authButton = document.getElementById('auth-button');
+const toggleLink = document.getElementById('toggle-link');
+let isLogin = true; // Track whether the user is logging in or registering
+
+toggleLink.addEventListener('click', () => {
+    isLogin = !isLogin;
+    if (isLogin) {
+        authTitle.textContent = 'Login';
+        authButton.textContent = 'Login';
+        toggleLink.textContent = "Don't have an account? Register here.";
+    } else {
+        authTitle.textContent = 'Register';
+        authButton.textContent = 'Register';
+        toggleLink.textContent = "Already have an account? Login here.";
+    }
+});
+
+authForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value.trim();
+
+    if (isLogin) {
+        // Login Process
+        signInWithEmailAndPassword(auth, email, password)
+    .then((userCredential) => {
+        const user = userCredential.user;
+        console.log('User logged in:', user);
+        console.log('Showing app...');
+        showApp(); // Function to show the main app after login
+        console.log('App shown');
+        
+    })
+
+    .catch((error) => {
+                const errorMessage = error.message;
+                alert('Login Succesfull: ' + errorMessage);
+            });
+    } else {
+        // Registration Process
+        createUserWithEmailAndPassword(auth, email, password)
+            .then((userCredential) => {
+                const user = userCredential.user;
+                console.log('User registered:', user);
+                alert('Registration successful! You can now log in.');
+                isLogin = true; // Switch to login mode
+                authTitle.textContent = 'Login';
+                authButton.textContent = 'Login';
+                toggleLink.textContent = "Don't have an account? Register here.";
+            })
+            .catch((error) => {
+                const errorMessage = error.message;
+                alert('Registration failed: ' + errorMessage);
+            });
+    }
+});
+
+// Show App After Login
+function showApp() {
+    authContainer.style.display = 'none'; // Hide auth container
+    document.getElementById('sidebar').style.display = 'block'; // Show sidebar
+    document.getElementById('main-content').style.display = 'block'; // Show main content
+    document.getElementById(authContainer).style.display = 'hide';
+    updateAuthOption(); // Update the sidebar with the correct option
+
+}
+    
+
+// Logout Function
+function logout() {
+    signOut(auth).then(() => {
+        alert('Logged out successfully');
+        location.reload(); // Reload the page to show the login form again
+    }).catch((error) => {
+        const errorMessage = error.message;
+        alert('Logout failed: ' + errorMessage);
+    });
+}
+   </script>
 </body>
     <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -484,28 +602,24 @@
   <div id="auth-container" class="auth-container">
     <h2 id="auth-title">Login</h2>
     <form id="auth-form">
-      <input type="text" id="username" placeholder="Username" required>
-      <input type="password" id="password" placeholder="Password" required>
-      <button type="submit" id="auth-button">Login</button>
+        <input type="email" id="email" placeholder="Email" required>
+        <input type="password" id="password" placeholder="Password" required>
+        <button type="submit" id="auth-button">Login</button>
     </form>
     <div class="toggle-link" id="toggle-link">Don't have an account? Register here.</div>
-  </div>
-
+</div>
   <!-- Sidebar -->
   <div class="sidebar" id="sidebar">
     <h2>Dashboard</h2>
     <a href="#" onclick="showSection('task-manager')">Task Manager</a>
-    <a href="#" onclick="showFutureFeature()">Backup & Restore</a>
-    <a href="#" onclick="showFutureFeature()">Themes</a>
-    <a href="#" onclick="showFutureFeature()">Notes</a>
-    <a href="#" onclick="showFutureFeature()">Shared Tasks</a>
     <a href="#" onclick="showSection('worksheet-generator')">Worksheet Generator</a>
     <a href="#" onclick="showSection('quiz-generator')">Quiz Generator</a>
     <a href="#" onclick="showSection('tech-updates')">Tech Updates</a>
     <a href="#" onclick="showSection('themes')">Themes</a>
     <a href="#" onclick="showSection('my-notes')">My notes</a>
+    <a href="#" onclick="showSection('shared-tasks')">Shared Tasks</a>
+    <a href="#" onclick="showSection('shared-notes')">Shared Notes</a>
     
-
     <button class="logout-btn" onclick="logout()">Logout</button>
   </div>
 
@@ -610,7 +724,9 @@
     <!-- Tech Updates Section -->
     <div id="tech-updates" class="feature-section">
       <h2>Tech Updates</h2>
-      <button onclick="showUpdate()">Check for Updates</button>
+      <button onclick= showTechUpdates();style-color; #007BFF; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px;">
+    Check for Updates
+</button>
       <div id="updateMessage"></div>
     </div>
 
@@ -632,6 +748,38 @@
 <div id="themeDialog" style="display: none;">
     <p>There are some bugs in these theme options, and they will be fixed in the next V3 update.</p>
     <button onclick="closeThemeDialog()" style="padding: 10px 20px; background-color: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer;">Close</button>
+
+    <!-- Shared Tasks Section -->
+<div id="shared-tasks" class="feature-section">
+    <h2>Shared Tasks</h2>
+    <div class="task-manager">
+        <h3>Manage Your Shared Tasks</h3>
+        <!-- Task Form -->
+        <div class="task-form">
+            <input type="text" id="sharedTaskName" placeholder="Task Name" required>
+            <input type="text" id="sharedTaskDesc" placeholder="Task Description">
+            <select id="sharedTaskPriority">
+                <option value="low">Low Priority</option>
+                <option value="medium">Medium Priority</option>
+                <option value="high">High Priority</option>
+            </select>
+            <button onclick="addSharedTask()">Add Shared Task</button>
+        </div>
+
+        <!-- Shared Task List -->
+        <ul id="sharedTaskList" class="task-list">
+            <!-- Shared Task Items will appear here -->
+        </ul>
+    </div>
+</div>
+
+<!-- Shared Notes Section -->
+<div id="shared-notes" class="feature-section">
+    <h2>Shared Notes</h2>
+    <input type="text" id="sharedNoteName" placeholder="Note Title" style="padding: 10px; border: 1px solid #ddd; border-radius: 4px; width: calc(100% - 22px); margin-bottom: 10px;">
+    <textarea id="sharedNoteContent" placeholder="Write your note here..." style="padding: 10px; border: 1px solid #ddd; border-radius: 4px; width: calc(100% - 22px); height: 100px;"></textarea>
+    <button onclick="addSharedNote()" style="padding: 10px 20px; background-color: #007BFF; color: white; border: none; border-radius: 4px; cursor: pointer; margin-top: 10px;">Save Shared Note</button>
+    <ul id="sharedNotesList" style="margin-top: 20px; list-style-type: none;"></ul>
 </div>
   
   <script>
@@ -702,93 +850,23 @@ function showThemeDialog() {
 function closeThemeDialog() {
   document.getElementById('themeDialog').style.display = 'none';
 }
+ 
 
 
-// Authentication Functions
-    const authContainer = document.getElementById('auth-container');
-    const authForm = document.getElementById('auth-form');
-    const authTitle = document.getElementById('auth-title');
-    const authButton = document.getElementById('auth-button');
-    const toggleLink = document.getElementById('toggle-link');
-    let isLogin = true;
-
-    // Toggle between Login and Register
-    toggleLink.addEventListener('click', () => {
-      isLogin = !isLogin;
-      if (isLogin) {
-        authTitle.textContent = 'Login';
-        authButton.textContent = 'Login';
-        toggleLink.textContent = "Don't have an account?    Register here.";
-      } else {
-        authTitle.textContent = 'Register';
-        authButton.textContent = 'Register';
-        toggleLink.textContent = "Already have an account?     Login here.";
-      }
-    });
-
-    // Handle Authentication
-    authForm.addEventListener('submit', function(e) {
-      e.preventDefault();
-      const username = document.getElementById('username').value.trim();
-      const password = document.getElementById('password').value.trim();
-
-      if (isLogin) {
-        // Login Process
-        const users = JSON.parse(localStorage.getItem('users')) || [];
-        const user = users.find(u => u.username === username && u.password === password);
-        if (user) {
-          localStorage.setItem('loggedInUser', JSON.stringify(user));
-          showApp();
-        } else {
-          alert('Invalid username or password.');
-        }
-      } else {
-        // Registration Process
-        let users = JSON.parse(localStorage.getItem('users')) || [];
-        const userExists = users.some(u => u.username === username);
-        if (userExists) {
-          alert('Username already exists. Please choose another one.');
-        } else {
-          const newUser = { username, password };
-          users.push(newUser);
-          localStorage.setItem('users', JSON.stringify(users));
-          alert('Registration successful! You can now log in.');
-          isLogin = true;
-          authTitle.textContent = 'Login';
-          authButton.textContent = 'Login';
-          toggleLink.textContent = "Don't have an account? Register here.";
-        }
-      }
-    });
-    
-    // Show App After Login
-    function showApp() {
-      authContainer.style.display = 'none';
-      document.getElementById('sidebar').style.display = 'block';
-      document.getElementById('main-content').style.display = 'block';
-      showSection('task-manager'); // Show Task Manager by default
-      initTaskManager();
+// Check if User is Already Logged In
+window.onload = function() {
+    const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
+    if (loggedInUser) {
+        
+    } else {
+        authContainer.style.display = 'block'; // Show auth container
+        document.getElementById('sidebar').style.display = 'none'; // Hide sidebar
+        document.getElementById('main-content').style.display = 'none'; // Hide main content
     }
+};
 
-    // Check if User is Already Logged In
-    window.onload = function() {
-      const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
-      if (loggedInUser) {
-        showApp();
-      } else {
-        authContainer.style.display = 'block';
-        document.getElementById('sidebar').style.display = 'none';
-        document.getElementById('main-content').style.display = 'none';
-      }
-    }
 
-    // Logout Function
-    function logout() {
-      localStorage.removeItem('loggedInUser');
-      location.reload();
-    }
-
-    // Utility Function to Show Sections
+// Utility Function to Show Sections
     function showSection(sectionId) {
       const sections = document.querySelectorAll('.feature-section');
       sections.forEach(section => section.style.display = 'none');
@@ -1231,10 +1309,147 @@ function closeThemeDialog() {
     // =====================
     // Tech Updates Function
     // =====================
-    function showUpdate() {
-      document.getElementById('updateMessage').innerHTML = "There is a bug in this section as we are devloping the weekly auto change the  content of tech update section , so the tech updtate will be fixed in V3 update on the special occasion of new yeaar";
-    }
+    
+    
+    const apiKey = '33e82c50c24146f39825dee2a1b84eaa'; // Replace with your actual API key
 
+const builtInTechUpdates = [
+    {
+        title: "Advancements in Artificial Intelligence",
+        description: "Artificial Intelligence (AI) continues to evolve, with breakthroughs in natural language processing and machine learning. AI is now being used in various sectors, including healthcare, finance, and education, to improve efficiency and decision-making."
+    },
+    {
+        title: "5G Technology Rollout",
+        description: "The rollout of 5G technology is revolutionizing mobile communications, offering faster speeds and more reliable connections. This advancement is expected to enable new applications in IoT, autonomous vehicles, and smart cities."
+    },
+    {
+        title: "Quantum Computing Progress",
+        description: "Researchers are making significant strides in quantum computing, which has the potential to solve complex problems much faster than traditional computers. Companies are investing heavily in this technology to harness its capabilities for various applications."
+    },
+    {
+        title: "Cybersecurity Innovations",
+        description: "As cyber threats become more sophisticated, innovations in cybersecurity are crucial. New technologies such as AI-driven security systems and zero-trust architectures are being developed to protect sensitive data and systems."
+    },
+    {
+        title: "Blockchain Beyond Cryptocurrency",
+        description: "Blockchain technology is finding applications beyond cryptocurrency. Industries like supply chain management, healthcare, and finance are leveraging blockchain for transparency, traceability, and secure transactions."
+    },
+    {
+        title: "Augmented Reality (AR) and Virtual Reality (VR)",
+        description: "AR and VR technologies are transforming entertainment, education, and training. These immersive experiences are being used for everything from gaming to virtual classrooms, enhancing user engagement and learning outcomes."
+    },
+    {
+        title: "Sustainable Tech Innovations",
+        description: "Sustainability is at the forefront of technology development. Innovations in renewable energy, electric vehicles, and sustainable materials are helping to combat climate change and promote environmental responsibility."
+    },
+    {
+        title: "Advances in Robotics",
+        description: "Robotics technology is advancing rapidly, with robots being used in manufacturing, healthcare, and even households. These robots are becoming more autonomous and capable of performing complex tasks."
+    },
+    {
+        title: "Internet of Things (IoT) Expansion",
+        description: "The Internet of Things (IoT) continues to expand, connecting everyday devices to the internet. This connectivity allows for smarter homes, cities, and industries, improving efficiency and convenience."
+    },
+    {
+        title: "Edge Computing Growth",
+        description: "Edge computing is gaining traction as businesses seek to process data closer to where it is generated. This reduces latency and bandwidth usage, making it ideal for applications like autonomous vehicles and smart devices."
+    },
+    {
+        title: "Biotechnology Breakthroughs",
+        description: "Recent breakthroughs in biotechnology are paving the way for advancements in healthcare, including personalized medicine and gene editing technologies like CRISPR, which can potentially cure genetic diseases."
+    },
+    {
+        title: "Wearable Technology Trends",
+        description: "Wearable technology is becoming increasingly popular, with devices that monitor health metrics and enhance fitness tracking. These devices are providing users with valuable insights into their health and wellness."
+    },
+    {
+        title: "Remote Work Technology",
+        description: "The shift to remote work has accelerated the development of technologies that facilitate collaboration and communication. Tools like video conferencing, project management software, and virtual collaboration platforms are now essential."
+    },
+    {
+        title: "Smart Home Technologies",
+        description: "Smart home technologies are on the rise, allowing homeowners to control lighting, security, and appliances through their smartphones. This trend is enhancing convenience and energy efficiency."
+    },
+    {
+        title: "3D Printing Advancements",
+        description: "3D printing technology is evolving, enabling the production of complex designs and prototypes quickly and cost-effectively. This technology is being adopted in various fields, including manufacturing, healthcare, and construction."
+    },
+    {
+        title: "Data Privacy Technologies",
+        description: "As data privacy concerns grow, new technologies are emerging to protect user data. Solutions such as encryption, secure access controls, and privacy-focused applications are becoming increasingly important."
+    },
+    {
+        title: "Digital Payment Innovations",
+        description: "Digital payment technologies are transforming the way we conduct transactions. Contactless payments, mobile wallets, and blockchain-based payment systems are making transactions faster and more secure."
+    },
+    {
+        title: "Smart Agriculture Technologies",
+        description: "Smart agriculture technologies are revolutionizing farming practices. Innovations such as precision farming, drones, and IoT sensors are enhancing crop yields and resource management."
+    },
+    {
+        title: "Tele medicine Advancements",
+        description: "Telemedicine is becoming increasingly popular, allowing patients to consult with healthcare professionals remotely. This technology is improving access to healthcare services, especially in rural areas."
+    },
+    {
+        title: "Autonomous Vehicle Developments",
+        description: "Autonomous vehicle technology is advancing rapidly, with companies investing heavily in self-driving cars and trucks. This technology has the potential to transform the transportation industry."
+    },
+    {
+        title: "Environmental Monitoring Technologies",
+        description: "Environmental monitoring technologies are helping us better understand and mitigate the impact of human activities on the environment. These technologies include air and water quality monitoring, climate modeling, and sustainable resource management."
+    }
+];
+
+const fetchTechnologyNews = () => {
+    const url = `https://newsapi.org/v2/everything?q=technology&apiKey=$33e82c50c24146f39825dee2a1b84eaa,`;
+
+    fetch(url)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok: ' + response.statusText);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.articles.length > 0) {
+                displayArticles(data.articles);
+            } else {
+                showTechUpdates();
+            }
+        })
+        .catch(error => {
+            console.error("Error fetching technology news: ", error);
+            showTechUpdates();
+        });
+};
+
+const displayArticles = (articles) => {
+    const articlesContainer = document.getElementById('articlesContainer');
+    articlesContainer.innerHTML = ''; // Clear previous articles
+
+    articles.forEach(article => {
+        const articleElement = document.createElement('div');
+        articleElement.innerHTML = `<h3>${article.title}</h3>
+                                    <p>${article.description}</p>`;
+        articlesContainer.appendChild(articleElement);
+    });
+};
+
+const showTechUpdates = () => {
+    const techUpdatesContainer = document.getElementById('techUpdatesContainer');
+    techUpdatesContainer.innerHTML = ''; // Clear previous updates
+
+    builtInTechUpdates.forEach(update => {
+        const updateElement = document.createElement('div');
+        updateElement.innerHTML = `<h3>${update.title}</h3>
+                                    <p>${update.description}</p>`;
+        techUpdatesContainer.appendChild(updateElement);
+    });
+};
+
+// addEventListener
+
+document.getElementById('checkForUpdatesButton'),addEventListener(fetchTechnologyNews);
     // =====================
     // Initialization
     // =====================
