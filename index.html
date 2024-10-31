@@ -41,7 +41,7 @@
         padding: 20px;
         box-sizing: border-box;
         display: none
-        position: fixed; /* Fixed position for sidebar */
+        
     }
 
     .sidebar-item {
@@ -63,15 +63,14 @@
     }
     
     /* Sidebar styles */
-        #
+        
        
-.sidebar h2 {
+    .sidebar-h2 {
       text-align: left;
       margin-bottom: 20px;
     }
 
-    .sidebar a {
-      display: 
+    .sidebar-a {
       color: white;
       padding: 15px 20px;
       text-decoration: none;
@@ -109,10 +108,46 @@
         .sidebar-item:hover {
             background-color: #34495e; /* Change background on hover */
         }
+
+        h2 {
+            margin-top: 0;
+        }
+        .about-info {
+            margin: 15px 0;
+            padding: 10px;
+            border: 1px solid #bdc3c7;
+            border-radius: 4px;
+            background-color: #ffffff;
+        }
     </style>
 </head>
 <body>
-    <div id="sidebar">
+  <script>
+    function showSection(sectionId) {
+            
+      // Select all sections with the class 'feature-section'
+    const sections = document.querySelectorAll('.feature-section');
+
+// Hide all sections
+sections.forEach(section => {
+    section.style.display = 'none'; // Set each section to 'none'
+});
+      
+      // Show the selected section
+            const selectedSection = document.getElementById(sectionId);
+            if (selectedSection) {
+                selectedSection.style.display = 'block'; // Show the section
+            } else {
+                console.error('Section not found:', sectionId);
+            }
+        }
+
+        window.onload = function() {
+            // Optionally show a default section when the page loads
+            // showSection('about-website'); // Uncomment to show on load
+        };
+</script>
+<div id="sidebar">
         <a href="#" class="sidebar-item" onclick="showSection('task-manager')">
             <i class="fas fa-tasks"></i> Task Manager
         </a>
@@ -138,7 +173,10 @@
           <a href="#" class="sidebar-item" onclick="showSection('shared-notes')">
               <i class="fas fa-share-square"></i> Shared Notes
          
-            <a href="#" class="sidebar-item" onclick="logout()">
+              <a href="#" class="sidebar-item" onclick="showSection('about-website')">
+                <i class="fas fa-info-circle"></i> About Website
+           
+          <a href="#" class="sidebar-item" onclick="logout()">
                 <i class="fas fa-sign-out-alt"></i> Logout   
         </a>
     </div>
@@ -211,7 +249,7 @@ authForm.addEventListener('submit', (e) => {
 
     .catch((error) => {
                 const errorMessage = error.message;
-                alert('Login Succesfull: ' + errorMessage);
+                alert('Login Failed: ' + errorMessage);
             });
     } else {
         // Registration Process
@@ -253,6 +291,51 @@ function logout() {
         alert('Logout failed: ' + errorMessage);
     });
 }
+
+// Function to add a task to shared tasks
+function addTask(taskName) {
+            const userId = firebase.auth().currentUser ? firebase.auth().currentUser.uid : 'Anonymous'; 
+            const userName = firebase.auth().currentUser ? firebase.auth().currentUser.displayName : 'Anonymous';
+
+            db.collection('sharedTasks').add({
+                taskName: taskName,
+                addedBy: userName,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            })
+            .then(() => {
+                console.log('Task added successfully');
+                displayTasks();
+            })
+            .catch(error => {
+                console.error('Error adding task: ', error);
+            });
+        }
+
+        // Function to display tasks
+        function displayTasks() {
+            const tasksContainer = document.getElementById('tasks-container');
+            tasksContainer.innerHTML = ''; // Clear previous tasks
+
+            db.collection('sharedTasks').orderBy('timestamp', 'desc').get().then(querySnapshot => {
+                querySnapshot.forEach(doc => {
+                    const task = doc.data();
+                    const taskElement = document.createElement('div');
+                    taskElement.textContent = `${task.taskName} was added by ${task.addedBy}`;
+                    tasksContainer.appendChild(taskElement);
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching tasks: ', error);
+            });
+        }
+
+        // Call this function when the button is clicked
+document.getElementById('add-shared-task-button').addEventListener('click', addSharedTask); 
+        
+        // Optionally call displayTasks on page load
+        window.onload = function() {
+            displayTasks();
+        };
    </script>
 </body>
     <meta charset="UTF-8">
@@ -575,18 +658,7 @@ function logout() {
         margin-left: 0;
       }
 
-      /* Target the button in the Tech Update section */
-.tech-update-btn {
-   display: flex
-    background-color: blue; /* Set the button color to blue */
-    color: white; /* Text color */
-    border-radius: 15px; /* Rounded corners */
-    padding: 10px 20px; /* Add some padding */
-    border: none; /* Remove border */
-    cursor: pointer; /* Show pointer cursor on hover */
-    font-size: 16px; /* Adjust font size */
-    transition: background-color 0.3s ease; /* Smooth transition for hover */
-}
+      
 
 /* Add hover effect for the button */
 .tech-update-btn:hover {
@@ -619,7 +691,7 @@ function logout() {
     <a href="#" onclick="showSection('my-notes')">My notes</a>
     <a href="#" onclick="showSection('shared-tasks')">Shared Tasks</a>
     <a href="#" onclick="showSection('shared-notes')">Shared Notes</a>
-    
+    <a href="#" onclick="showSection('about-website')">About Website</a>
     <button class="logout-btn" onclick="logout()">Logout</button>
   </div>
 
@@ -720,6 +792,41 @@ function logout() {
 
       <div id="quizArea"></div>
     </div>
+  
+    <!-- About Website Section -->
+    <div id="about-website" class="feature-section">
+      <h2>About This Website</h2>
+    <div class="about-info">
+        <strong>Developer:</strong> Anagh Manglick
+    </div>
+    <div class="about-info">
+        <strong>Class:</strong> 7th
+    </div>
+    <div class="about-info">
+        <strong>Website Server:</strong> YES
+    </div>
+    <div class="about-info">
+        <strong>Version:</strong> V2.8 (ALPHA TESTING)
+    </div>
+</div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const aboutLink = document.getElementById('about-link');
+            const aboutSection = document.getElementById('about-section');
+
+            aboutLink.onclick = function(event) {
+                event.preventDefault(); // Prevent the default link behavior
+
+                // Toggle visibility of the about section
+                if (aboutSection.style.display === 'none' || aboutSection.style.display === '') {
+                    aboutSection.style.display = 'block'; // Show the section
+                } else {
+                    aboutSection.style.display = 'none'; // Hide the section
+                }
+            };
+        });
+    </script>
 
     <!-- Tech Updates Section -->
     <div id="tech-updates" class="feature-section">
@@ -745,11 +852,13 @@ function logout() {
     <button onclick="showThemeDialog()" style="padding: 10px 20px; background-color: #007BFF; color: white; border: none; border-radius: 4px; cursor: pointer;">Choose Theme</button>
 </div>
 
+
 <div id="themeDialog" style="display: none;">
     <p>There are some bugs in these theme options, and they will be fixed in the next V3 update.</p>
     <button onclick="closeThemeDialog()" style="padding: 10px 20px; background-color: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer;">Close</button>
-
-    <!-- Shared Tasks Section -->
+  </div>
+   
+  <!-- Shared Tasks Section -->
 <div id="shared-tasks" class="feature-section">
     <h2>Shared Tasks</h2>
     <div class="task-manager">
@@ -763,8 +872,7 @@ function logout() {
                 <option value="medium">Medium Priority</option>
                 <option value="high">High Priority</option>
             </select>
-            <button onclick="addSharedTask()">Add Shared Task</button>
-        </div>
+            <button id="add-shared-task-button">Add Shared Task</button>
 
         <!-- Shared Task List -->
         <ul id="sharedTaskList" class="task-list">
@@ -797,11 +905,11 @@ function loadNotes() {
 
 // Save notes to localStorage
 function saveNotes() {
-    const loggedInUser  = JSON.parse(localStorage.getItem('loggedInUser '));
-    if (loggedInUser ) {
-        localStorage.setItem(`${loggedInUser .username}_notes`, JSON.stringify(notes));
-    }
+  function saveNotes() {
+    localStorage.setItem('notes', JSON.stringify(notes));
 }
+    }
+
 
 // Add Note
 function addNote() {
@@ -851,7 +959,11 @@ function closeThemeDialog() {
   document.getElementById('themeDialog').style.display = 'none';
 }
  
-
+//Shared Tasks Section Visiblity
+function showSection(sectionId) {
+    const sections = document.querySelectorAll('.feature-section');
+    sections.forEach(section => section.style.display = 'none'); // Hide all sections
+    document.getElementById(sectionId).style.display = 'block'; // Show the selected section
 
 // Check if User is Already Logged In
 window.onload = function() {
@@ -859,18 +971,56 @@ window.onload = function() {
     if (loggedInUser) {
         
     } else {
-        authContainer.style.display = 'block'; // Show auth container
+        document.getElementById('auth-container').style.display = 'block'; // Show auth container
         document.getElementById('sidebar').style.display = 'none'; // Hide sidebar
         document.getElementById('main-content').style.display = 'none'; // Hide main content
     }
 };
 
+// Function to add a shared note
+async function addSharedNote() {
+    const noteTitle = document.getElementById('sharedNoteName').value.trim();
+    const noteContent = document.getElementById('sharedNoteContent').value.trim();
+    const sharedWith = ['user1', 'user3']; // Replace with actual user IDs
 
-// Utility Function to Show Sections
-    function showSection(sectionId) {
-      const sections = document.querySelectorAll('.feature-section');
-      sections.forEach(section => section.style.display = 'none');
-      document.getElementById(sectionId).style.display = 'block';
+    if (noteTitle && noteContent) {
+        try {
+            const docRef = await addDoc(collection(db, 'sharedNotes'), {
+                title: noteTitle,
+                content: noteContent,
+                sharedWith: sharedWith
+            });
+            console.log("Shared Note added with ID: ", docRef.id);
+            fetchSharedNotes(); // Refresh the list
+        } catch (error) {
+            console.error("Error adding shared note: ", error);
+        }
+    } else {
+        alert('Both title and content are required.');
+    }
+}
+
+// Function to fetch and display shared notes
+    function fetchSharedNotes() {
+    const querySnapshot = await getDocs(collection(db, 'sharedNotes'));
+    const notesList = document.getElementById('sharedNotesList');
+    notesList.innerHTML = ''; // Clear the list
+
+    querySnapshot.forEach((doc) => {
+        const note = doc.data();
+        const li = document.createElement('li');
+        li.textContent = `${note.title}: ${note.content}`;
+        notesList.appendChild(li);
+    });
+}
+
+// Call fetchSharedNotes on page load or when the shared notes section is shown
+window.onload = function() {
+    fetchSharedNotes(); // Load notes when the page loads
+};
+
+
+    
     }
 
     function showFutureFeature() {
@@ -1461,6 +1611,5 @@ document.getElementById('checkForUpdatesButton'),addEventListener(fetchTechnolog
       }
     }
   </script>
-
 </body>
 </html>
