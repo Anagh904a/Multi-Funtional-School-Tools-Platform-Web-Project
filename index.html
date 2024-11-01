@@ -11,14 +11,7 @@
         box-sizing: border-box;
     }
 
-    /* Layout styles */
-    body {
-        display: flex;
-        margin: 0;
-        height: 100vh;
-        overflow: hidden;
-        font-family: Arial, sans-serif;
-    }
+    
 
     .main-content {
   overflow: auto; /* Ensure content is scrollable */
@@ -33,16 +26,7 @@
 
 
     /* Sidebar styles */
-    #sidebar {
-        width: 250px;
-        background-color: #2c3e50; /* Sidebar background color */
-        color: #ecf0f1; /* Sidebar text color */
-        height: 100vh;
-        padding: 20px;
-        box-sizing: border-box;
-        display: none
-        
-    }
+   
 
     .sidebar-item {
         display: flex;
@@ -65,12 +49,13 @@
     /* Sidebar styles */
         
        
-    .sidebar-h2 {
+.sidebar h2 {
       text-align: left;
       margin-bottom: 20px;
     }
 
-    .sidebar-a {
+    .sidebar a {
+      display: 
       color: white;
       padding: 15px 20px;
       text-decoration: none;
@@ -109,9 +94,6 @@
             background-color: #34495e; /* Change background on hover */
         }
 
-        h2 {
-            margin-top: 0;
-        }
         .about-info {
             margin: 15px 0;
             padding: 10px;
@@ -119,35 +101,11 @@
             border-radius: 4px;
             background-color: #ffffff;
         }
+      
     </style>
 </head>
 <body>
-  <script>
-    function showSection(sectionId) {
-            
-      // Select all sections with the class 'feature-section'
-    const sections = document.querySelectorAll('.feature-section');
-
-// Hide all sections
-sections.forEach(section => {
-    section.style.display = 'none'; // Set each section to 'none'
-});
-      
-      // Show the selected section
-            const selectedSection = document.getElementById(sectionId);
-            if (selectedSection) {
-                selectedSection.style.display = 'block'; // Show the section
-            } else {
-                console.error('Section not found:', sectionId);
-            }
-        }
-
-        window.onload = function() {
-            // Optionally show a default section when the page loads
-            // showSection('about-website'); // Uncomment to show on load
-        };
-</script>
-<div id="sidebar">
+    <div id="sidebar">
         <a href="#" class="sidebar-item" onclick="showSection('task-manager')">
             <i class="fas fa-tasks"></i> Task Manager
         </a>
@@ -167,27 +125,21 @@ sections.forEach(section => {
         <a href="#" class="sidebar-item" onclick="showSection('themes')">
             <i class="fas fa-paint-brush"></i> Themes
 
-            <a href="#" class="sidebar-item" onclick="showSection('shared-tasks')">
-              <i class="fas fa-share-alt"></i> Shared Tasks
-          </a>
-          <a href="#" class="sidebar-item" onclick="showSection('shared-notes')">
-              <i class="fas fa-share-square"></i> Shared Notes
-         
-              <a href="#" class="sidebar-item" onclick="showSection('about-website')">
-                <i class="fas fa-info-circle"></i> About Website
-           
-          <a href="#" class="sidebar-item" onclick="logout()">
+            <a href="#" class="sidebar-item" onclick="showSection('about-website')">
+              <i class="fas fa-info-circle"></i> About Website
+       
+            <a href="#" class="sidebar-item" onclick="logout()">
                 <i class="fas fa-sign-out-alt"></i> Logout   
         </a>
     </div>
 
     <script type="module">
       // Import the functions you need from the SDKs you need
-      
       import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
       import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
       import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
       import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-analytics.js";
+      
       // TODO: Add SDKs for Firebase products that you want to use
       // https://firebase.google.com/docs/web/setup#available-libraries
     
@@ -197,19 +149,19 @@ sections.forEach(section => {
         apiKey: "AIzaSyBnxKoEbh-xOHn_ogIHAt68HSTR5EOcSuU",
         authDomain: "listvista-5ce07.firebaseapp.com",
         projectId: "listvista-5ce07",
-        storageBucket: "listvista-5ce07.appspot.com",
+        storageBucket: "listvista-5ce07.firebasestorage.app",
         messagingSenderId: "516531579392",
-        appId: "1:516531579392:web:1737b6343f02fc66ae86e5",
-        measurementId: "G-4YEWQF9LE7"
+        appId: "1:516531579392:web:e9bbc06c93072808ae86e5",
+        measurementId: "G-Q36NJ1B4G0"
       };
     
       // Initialize Firebase
       const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+      const auth = getAuth(app);
       const analytics = getAnalytics(app);
       const db = getFirestore(app);
 
-      // Authentication Functions
+     // Authentication Functions
 const authContainer = document.getElementById('auth-container');
 const authForm = document.getElementById('auth-form');
 const authTitle = document.getElementById('auth-title');
@@ -291,64 +243,16 @@ function logout() {
         alert('Logout failed: ' + errorMessage);
     });
 }
+    
+    </script>
 
-// Function to add a task to shared tasks
-function addTask(taskName) {
-            const userId = firebase.auth().currentUser ? firebase.auth().currentUser.uid : 'Anonymous'; 
-            const userName = firebase.auth().currentUser ? firebase.auth().currentUser.displayName : 'Anonymous';
 
-            db.collection('sharedTasks').add({
-                taskName: taskName,
-                addedBy: userName,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            })
-            .then(() => {
-                console.log('Task added successfully');
-                displayTasks();
-            })
-            .catch(error => {
-                console.error('Error adding task: ', error);
-            });
-        }
-
-        // Function to display tasks
-        function displayTasks() {
-            const tasksContainer = document.getElementById('tasks-container');
-            tasksContainer.innerHTML = ''; // Clear previous tasks
-
-            db.collection('sharedTasks').orderBy('timestamp', 'desc').get().then(querySnapshot => {
-                querySnapshot.forEach(doc => {
-                    const task = doc.data();
-                    const taskElement = document.createElement('div');
-                    taskElement.textContent = `${task.taskName} was added by ${task.addedBy}`;
-                    tasksContainer.appendChild(taskElement);
-                });
-            })
-            .catch(error => {
-                console.error('Error fetching tasks: ', error);
-            });
-        }
-
-        // Call this function when the button is clicked
-document.getElementById('add-shared-task-button').addEventListener('click', addSharedTask); 
-        
-        // Optionally call displayTasks on page load
-        window.onload = function() {
-            displayTasks();
-        };
-   </script>
 </body>
     <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>School Tools Platform</title>
   <style>
-    /* General Styles */
-    body {
-      font-family: 'Roboto', sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: #f9fafb;
-    }
+    
 
     /* Hide all sections by default */
     .feature-section {
@@ -409,14 +313,7 @@ document.getElementById('add-shared-task-button').addEventListener('click', addS
 
     /* Sidebar Styles */
      
-        #sidebar {
-            width: 250px;
-            background-color: #2c3e50; /* Example background color */
-            color: #ecf0f1; /* Example text color */
-            height: 100vh;
-            padding: 20px;
-        }
-
+        
         .sidebar-item {
             display: flex;
             align-items: center;
@@ -433,17 +330,7 @@ document.getElementById('add-shared-task-button').addEventListener('click', addS
             background-color: #34495e; /* Change background on hover */
         }
 
-.sidebar {
-      width: 250px;
-      background-color: #007BFF;
-      color: white;
-      height: 100vh;
-      position: fixed;
-      left: 0;
-      top: 0;
-      padding-top: 20px;
-      display: none; /* Hidden by default, shown after login */
-    }
+
 
     .sidebar h2 {
       text-align: center;
@@ -482,8 +369,10 @@ document.getElementById('add-shared-task-button').addEventListener('click', addS
     .main-content {
       margin-left: 250px;
       padding: 40px;
+      height: 100vh
       flex-grow: 1;
       display: none; /* Hidden by default, shown after login */
+      
     }
 
     /* Task Manager Styles */
@@ -582,7 +471,202 @@ document.getElementById('add-shared-task-button').addEventListener('click', addS
       margin-bottom: 10px;
     }
 
-    /* Worksheet, Quiz Generator, and Tech Updates Styles */
+    
+
+    .themes-section {
+    padding: 20px;
+    background-color: #333; /* Dark background */
+    border-radius: 8px;
+ }
+
+.theme-toggle {
+    padding: 10px 15px;
+    background-color: #555;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.theme-toggle:hover {
+    background-color: #777;
+}
+
+.theme-menu {
+    margin-top: 10px;
+    background-color: #444;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.theme-menu ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.theme-menu li {
+    padding: 10px 15px;
+}
+
+.theme-button {
+    width: 100%;
+    background: none;
+    border: none;
+    color: white;
+    text-align: left;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.theme-button:hover {
+    background-color: #666;
+}
+
+
+
+/* Default Dark Theme */
+body.dark {
+    background-color: #4d4c4c; /* Dark background */
+    color: #ffffff; /* White text */
+}
+
+body.dark .themes-section {
+    background-color: #1e1e1e; /* Darker background for sections */
+}
+
+body.dark .theme-menu {
+    background-color: #333; /* Dark menu background */
+}
+
+body.dark .theme-button {
+    color: white; /* White text for buttons */
+}
+
+/* Yellow Theme */
+body.yellow {
+    background-color: #fff7e0; /* Light yellow background */
+    color: #333; /* Dark text */
+}
+
+body.yellow .themes-section {
+    background-color: #ffe600; /* Bright yellow for sections */
+}
+
+body.yellow .theme-menu {
+    background-color: #ffd700; /* Gold-like menu background */
+}
+
+body.yellow .theme-button {
+    color: #333; /* Dark text for buttons */
+}
+
+/* Blue Theme */
+body.blue {
+    background-color: #e0f7fa; /* Light blue background */
+    color: #004d40; /* Dark teal text */
+}
+
+body.blue .sidebar {
+    background-color: #00bcd4; /* Cyan sidebar */
+    color: #ffffff; /* Set sidebar text color to white for better contrast */
+}
+
+body.blue .main-content {
+    background-color: #e0f7fa; /* Match main content to blue */
+}
+
+body.blue .themes-section {
+    background-color: #00bcd4; /* Cyan for sections */
+}
+
+body.blue .theme-menu {
+    background-color: #00838f; /* Dark cyan for menu background */
+}
+
+body.blue .theme-button {
+    color: white; /* White text for buttons */
+}
+
+/* Light Theme */
+body.light {
+    background-color: #ffffff; /* Light background */
+    color: #333; /* Dark text */
+}
+
+body.light .sidebar {
+    background-color: #ffffff; /* White sidebar background */
+    color: #333; /* Dark text in sidebar */
+    border-right: 1px solid #ddd; /* Optional: border for separation */
+}
+
+body.light .main-content {
+    background-color: #ffffff; /* Match main content to light */
+    color: #333; /* Dark text in main content */
+}
+
+/* Additional Styles for Light Theme Button */
+.light-theme-button {
+    padding: 10px 20px;
+    background-color: #007BFF; /* Button background color */
+    color: white; /* Button text color */
+    border: none; /* No border */
+    border-radius: 4px; /* Rounded corners */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background-color 0.3s; /* Smooth transition */
+}
+
+.light-theme-button:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+}
+
+
+/* Sidebar Styles */
+.sidebar {
+    background-color: #333; /* Default dark background */
+    color: white; /* Default white text/icons */
+    padding: 20px;
+    width: 250px; /* Width of the sidebar */
+    position: fixed; /* Fixed positioning for desktop */
+    top: 0;
+    left: 0; /* Align to the left */
+    height: 100%; /* Full height */
+    overflow-y: auto; /* Enable scrolling if needed */
+    transition: background-color 0.3s, color 0.3s; /* Smooth transition for colors */
+}
+
+
+
+
+.sidebar.dark {
+    background-color: #1e1e1e; /* Dark sidebar */
+}
+
+.sidebar.yellow {
+    background-color: #ffe600; /* Yellow sidebar */
+    color: #0c0c0c; /* Dark text/icons for yellow */
+}
+
+.sidebar.blue {
+    background-color: #00bcd4; /* Cyan sidebar */
+    color: rgb(245, 240, 240); /* White text/icons for blue */
+}
+
+/* Sidebar Icon Styles */
+.sidebar-icon {
+    color: white; /* Default white for icons */
+}
+
+.sidebar.yellow .sidebar-icon {
+    color: #020202; /* Dark icons for yellow theme */
+}
+
+.sidebar.blue .sidebar-icon {
+    color: rgb(15, 15, 15); /* White icons for blue theme */
+}
+    
+    
+/* Worksheet, Quiz Generator, and Tech Updates Styles */
     .feature-section {
       display: none;
       margin-top: 50px;
@@ -658,15 +742,8 @@ document.getElementById('add-shared-task-button').addEventListener('click', addS
         margin-left: 0;
       }
 
-      
-
-/* Add hover effect for the button */
-.tech-update-btn:hover {
-    background-color: darkblue; /* Darker shade of blue on hover */
-        }
-
-    
-  </style>
+      /* Target the button in the Tech Update section */
+</style>
 </head>
 <body>
 
@@ -674,27 +751,16 @@ document.getElementById('add-shared-task-button').addEventListener('click', addS
   <div id="auth-container" class="auth-container">
     <h2 id="auth-title">Login</h2>
     <form id="auth-form">
-        <input type="email" id="email" placeholder="Email" required>
-        <input type="password" id="password" placeholder="Password" required>
-        <button type="submit" id="auth-button">Login</button>
+      <input type="email" id="email" placeholder="Email" required>
+      <input type="password" id="password" placeholder="Password" required>
+      <button type="submit" id="auth-button">Login</button>
     </form>
     <div class="toggle-link" id="toggle-link">Don't have an account? Register here.</div>
-</div>
-  <!-- Sidebar -->
-  <div class="sidebar" id="sidebar">
-    <h2>Dashboard</h2>
-    <a href="#" onclick="showSection('task-manager')">Task Manager</a>
-    <a href="#" onclick="showSection('worksheet-generator')">Worksheet Generator</a>
-    <a href="#" onclick="showSection('quiz-generator')">Quiz Generator</a>
-    <a href="#" onclick="showSection('tech-updates')">Tech Updates</a>
-    <a href="#" onclick="showSection('themes')">Themes</a>
-    <a href="#" onclick="showSection('my-notes')">My notes</a>
-    <a href="#" onclick="showSection('shared-tasks')">Shared Tasks</a>
-    <a href="#" onclick="showSection('shared-notes')">Shared Notes</a>
-    <a href="#" onclick="showSection('about-website')">About Website</a>
-    <button class="logout-btn" onclick="logout()">Logout</button>
   </div>
 
+  
+
+    
   <!-- Main Content -->
   <div class="main-content" id="main-content">
 
@@ -792,7 +858,7 @@ document.getElementById('add-shared-task-button').addEventListener('click', addS
 
       <div id="quizArea"></div>
     </div>
-  
+
     <!-- About Website Section -->
     <div id="about-website" class="feature-section">
       <h2>About This Website</h2>
@@ -827,12 +893,12 @@ document.getElementById('add-shared-task-button').addEventListener('click', addS
             };
         });
     </script>
-
+    
     <!-- Tech Updates Section -->
     <div id="tech-updates" class="feature-section">
       <h2>Tech Updates</h2>
-      <button onclick= showTechUpdates();style-color; #007BFF; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px;">
-    Check for Updates
+      <button onclick="showUpdate()" style="background-color: blue; color: white; padding: 8px 16px; border: none; border-radius: 3px; cursor: pointer;">
+  Check for Updates
 </button>
       <div id="updateMessage"></div>
     </div>
@@ -849,46 +915,39 @@ document.getElementById('add-shared-task-button').addEventListener('click', addS
   <!-- Themes Section -->
 <div id="themes" class="feature-section">
     <h2>Themes</h2>
-    <button onclick="showThemeDialog()" style="padding: 10px 20px; background-color: #007BFF; color: white; border: none; border-radius: 4px; cursor: pointer;">Choose Theme</button>
+    <button id="choose-theme-button" class="theme-toggle" style="padding: 10px 20px; background-color: #007BFF; color: white; border: none; border-radius: 4px; cursor: pointer;">Choose Theme</button>
+    
 </div>
 
-
-<div id="themeDialog" style="display: none;">
-    <p>There are some bugs in these theme options, and they will be fixed in the next V3 update.</p>
-    <button onclick="closeThemeDialog()" style="padding: 10px 20px; background-color: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer;">Close</button>
-  </div>
-   
-  <!-- Shared Tasks Section -->
-<div id="shared-tasks" class="feature-section">
-    <h2>Shared Tasks</h2>
-    <div class="task-manager">
-        <h3>Manage Your Shared Tasks</h3>
-        <!-- Task Form -->
-        <div class="task-form">
-            <input type="text" id="sharedTaskName" placeholder="Task Name" required>
-            <input type="text" id="sharedTaskDesc" placeholder="Task Description">
-            <select id="sharedTaskPriority">
-                <option value="low">Low Priority</option>
-                <option value="medium">Medium Priority</option>
-                <option value="high">High Priority</option>
-            </select>
-            <button id="add-shared-task-button">Add Shared Task</button>
-
-        <!-- Shared Task List -->
-        <ul id="sharedTaskList" class="task-list">
-            <!-- Shared Task Items will appear here -->
+<div id="theme-menu" class="theme-menu" style="display: none;">
+        <ul>
+          <li><button id="dark-theme-button" class="theme-button" data-theme="dark">Dark (Default)</button></li>
+            <li><button id="yellow-theme-button" class="theme-button" data-theme="yellow">Yellow Theme</button></li>
+            <li><button id="blue-theme-button" class="theme-button" data-theme="blue">Blue Theme</button></li>
+            <li><button id="light-theme-button" class="theme-button" data-theme="light">Light Theme</button></li>
         </ul>
     </div>
-</div>
 
-<!-- Shared Notes Section -->
-<div id="shared-notes" class="feature-section">
-    <h2>Shared Notes</h2>
-    <input type="text" id="sharedNoteName" placeholder="Note Title" style="padding: 10px; border: 1px solid #ddd; border-radius: 4px; width: calc(100% - 22px); margin-bottom: 10px;">
-    <textarea id="sharedNoteContent" placeholder="Write your note here..." style="padding: 10px; border: 1px solid #ddd; border-radius: 4px; width: calc(100% - 22px); height: 100px;"></textarea>
-    <button onclick="addSharedNote()" style="padding: 10px 20px; background-color: #007BFF; color: white; border: none; border-radius: 4px; cursor: pointer; margin-top: 10px;">Save Shared Note</button>
-    <ul id="sharedNotesList" style="margin-top: 20px; list-style-type: none;"></ul>
-</div>
+  </div>
+
+<script>
+  //themes functions
+  document.getElementById('choose-theme-button').addEventListener('click', function() {
+    const themeMenu = document.getElementById('theme-menu');
+    themeMenu.style.display = themeMenu.style.display === 'none' ? 'block' : 'none';
+});
+
+const themeButtons = document.querySelectorAll('.theme-button');
+themeButtons.forEach(button => {
+    button.addEventListener('click', function() {
+        const theme = this.getAttribute('data-theme');
+        document.body.className = theme; // Apply the selected theme class to the body
+
+        // Optionally hide the menu after selection
+        document.getElementById('theme-menu').style.display = 'none';
+    });
+});
+</script>
   
   <script>
   
@@ -905,28 +964,40 @@ function loadNotes() {
 
 // Save notes to localStorage
 function saveNotes() {
-  function saveNotes() {
-    localStorage.setItem('notes', JSON.stringify(notes));
-}
+    const loggedInUser  = JSON.parse(localStorage.getItem('loggedInUser '));
+    if (loggedInUser ) {
+        localStorage.setItem(`${loggedInUser .username}_notes`, JSON.stringify(notes));
     }
-
+}
 
 // Add Note
-function addNote() {
-    const noteName = document.getElementById('noteName').value.trim();
-    const noteContent = document.getElementById('noteContent').value.trim();
+function saveNotes() {
+      const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
+      if (loggedInUser) {
+        localStorage.setItem(`${loggedInUser.username}_notes`, JSON.stringify(tasks));
+      }
+    }
 
-    if (noteName && noteContent) {
-        const note = { name: noteName, content: noteContent };
+    function addNote() {
+      const taskName = document.getElementById('noteName').value.trim();
+      const taskDesc = document.getElementById('noteContent').value.trim();
+      const taskPriority = document.getElementById('taskPriority').value;
+
+      if (noteName) {
+        const note = {
+          name: noteName,
+          desc: noteContent,
+          
+        };
         notes.push(note);
         saveNotes();
         renderNotes();
         document.getElementById('noteName').value = '';
         document.getElementById('noteContent').value = '';
-    } else {
-        alert('Both fields are required.');
+      } else {
+        alert('Note name is required.');
+      }
     }
-}
 
 // Render Notes
 function renderNotes() {
@@ -958,69 +1029,12 @@ function showThemeDialog() {
 function closeThemeDialog() {
   document.getElementById('themeDialog').style.display = 'none';
 }
- 
-//Shared Tasks Section Visiblity
-function showSection(sectionId) {
-    const sections = document.querySelectorAll('.feature-section');
-    sections.forEach(section => section.style.display = 'none'); // Hide all sections
-    document.getElementById(sectionId).style.display = 'block'; // Show the selected section
 
-// Check if User is Already Logged In
-window.onload = function() {
-    const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
-    if (loggedInUser) {
-        
-    } else {
-        document.getElementById('auth-container').style.display = 'block'; // Show auth container
-        document.getElementById('sidebar').style.display = 'none'; // Hide sidebar
-        document.getElementById('main-content').style.display = 'none'; // Hide main content
-    }
-};
-
-// Function to add a shared note
-async function addSharedNote() {
-    const noteTitle = document.getElementById('sharedNoteName').value.trim();
-    const noteContent = document.getElementById('sharedNoteContent').value.trim();
-    const sharedWith = ['user1', 'user3']; // Replace with actual user IDs
-
-    if (noteTitle && noteContent) {
-        try {
-            const docRef = await addDoc(collection(db, 'sharedNotes'), {
-                title: noteTitle,
-                content: noteContent,
-                sharedWith: sharedWith
-            });
-            console.log("Shared Note added with ID: ", docRef.id);
-            fetchSharedNotes(); // Refresh the list
-        } catch (error) {
-            console.error("Error adding shared note: ", error);
-        }
-    } else {
-        alert('Both title and content are required.');
-    }
-}
-
-// Function to fetch and display shared notes
-    function fetchSharedNotes() {
-    const querySnapshot = await getDocs(collection(db, 'sharedNotes'));
-    const notesList = document.getElementById('sharedNotesList');
-    notesList.innerHTML = ''; // Clear the list
-
-    querySnapshot.forEach((doc) => {
-        const note = doc.data();
-        const li = document.createElement('li');
-        li.textContent = `${note.title}: ${note.content}`;
-        notesList.appendChild(li);
-    });
-}
-
-// Call fetchSharedNotes on page load or when the shared notes section is shown
-window.onload = function() {
-    fetchSharedNotes(); // Load notes when the page loads
-};
-
-
-    
+    // Utility Function to Show Sections
+    function showSection(sectionId) {
+      const sections = document.querySelectorAll('.feature-section');
+      sections.forEach(section => section.style.display = 'none');
+      document.getElementById(sectionId).style.display = 'block';
     }
 
     function showFutureFeature() {
@@ -1459,147 +1473,10 @@ window.onload = function() {
     // =====================
     // Tech Updates Function
     // =====================
-    
-    
-    const apiKey = '33e82c50c24146f39825dee2a1b84eaa'; // Replace with your actual API key
-
-const builtInTechUpdates = [
-    {
-        title: "Advancements in Artificial Intelligence",
-        description: "Artificial Intelligence (AI) continues to evolve, with breakthroughs in natural language processing and machine learning. AI is now being used in various sectors, including healthcare, finance, and education, to improve efficiency and decision-making."
-    },
-    {
-        title: "5G Technology Rollout",
-        description: "The rollout of 5G technology is revolutionizing mobile communications, offering faster speeds and more reliable connections. This advancement is expected to enable new applications in IoT, autonomous vehicles, and smart cities."
-    },
-    {
-        title: "Quantum Computing Progress",
-        description: "Researchers are making significant strides in quantum computing, which has the potential to solve complex problems much faster than traditional computers. Companies are investing heavily in this technology to harness its capabilities for various applications."
-    },
-    {
-        title: "Cybersecurity Innovations",
-        description: "As cyber threats become more sophisticated, innovations in cybersecurity are crucial. New technologies such as AI-driven security systems and zero-trust architectures are being developed to protect sensitive data and systems."
-    },
-    {
-        title: "Blockchain Beyond Cryptocurrency",
-        description: "Blockchain technology is finding applications beyond cryptocurrency. Industries like supply chain management, healthcare, and finance are leveraging blockchain for transparency, traceability, and secure transactions."
-    },
-    {
-        title: "Augmented Reality (AR) and Virtual Reality (VR)",
-        description: "AR and VR technologies are transforming entertainment, education, and training. These immersive experiences are being used for everything from gaming to virtual classrooms, enhancing user engagement and learning outcomes."
-    },
-    {
-        title: "Sustainable Tech Innovations",
-        description: "Sustainability is at the forefront of technology development. Innovations in renewable energy, electric vehicles, and sustainable materials are helping to combat climate change and promote environmental responsibility."
-    },
-    {
-        title: "Advances in Robotics",
-        description: "Robotics technology is advancing rapidly, with robots being used in manufacturing, healthcare, and even households. These robots are becoming more autonomous and capable of performing complex tasks."
-    },
-    {
-        title: "Internet of Things (IoT) Expansion",
-        description: "The Internet of Things (IoT) continues to expand, connecting everyday devices to the internet. This connectivity allows for smarter homes, cities, and industries, improving efficiency and convenience."
-    },
-    {
-        title: "Edge Computing Growth",
-        description: "Edge computing is gaining traction as businesses seek to process data closer to where it is generated. This reduces latency and bandwidth usage, making it ideal for applications like autonomous vehicles and smart devices."
-    },
-    {
-        title: "Biotechnology Breakthroughs",
-        description: "Recent breakthroughs in biotechnology are paving the way for advancements in healthcare, including personalized medicine and gene editing technologies like CRISPR, which can potentially cure genetic diseases."
-    },
-    {
-        title: "Wearable Technology Trends",
-        description: "Wearable technology is becoming increasingly popular, with devices that monitor health metrics and enhance fitness tracking. These devices are providing users with valuable insights into their health and wellness."
-    },
-    {
-        title: "Remote Work Technology",
-        description: "The shift to remote work has accelerated the development of technologies that facilitate collaboration and communication. Tools like video conferencing, project management software, and virtual collaboration platforms are now essential."
-    },
-    {
-        title: "Smart Home Technologies",
-        description: "Smart home technologies are on the rise, allowing homeowners to control lighting, security, and appliances through their smartphones. This trend is enhancing convenience and energy efficiency."
-    },
-    {
-        title: "3D Printing Advancements",
-        description: "3D printing technology is evolving, enabling the production of complex designs and prototypes quickly and cost-effectively. This technology is being adopted in various fields, including manufacturing, healthcare, and construction."
-    },
-    {
-        title: "Data Privacy Technologies",
-        description: "As data privacy concerns grow, new technologies are emerging to protect user data. Solutions such as encryption, secure access controls, and privacy-focused applications are becoming increasingly important."
-    },
-    {
-        title: "Digital Payment Innovations",
-        description: "Digital payment technologies are transforming the way we conduct transactions. Contactless payments, mobile wallets, and blockchain-based payment systems are making transactions faster and more secure."
-    },
-    {
-        title: "Smart Agriculture Technologies",
-        description: "Smart agriculture technologies are revolutionizing farming practices. Innovations such as precision farming, drones, and IoT sensors are enhancing crop yields and resource management."
-    },
-    {
-        title: "Tele medicine Advancements",
-        description: "Telemedicine is becoming increasingly popular, allowing patients to consult with healthcare professionals remotely. This technology is improving access to healthcare services, especially in rural areas."
-    },
-    {
-        title: "Autonomous Vehicle Developments",
-        description: "Autonomous vehicle technology is advancing rapidly, with companies investing heavily in self-driving cars and trucks. This technology has the potential to transform the transportation industry."
-    },
-    {
-        title: "Environmental Monitoring Technologies",
-        description: "Environmental monitoring technologies are helping us better understand and mitigate the impact of human activities on the environment. These technologies include air and water quality monitoring, climate modeling, and sustainable resource management."
+    function showUpdate() {
+      document.getElementById('updateMessage').innerHTML = "There is a bug in this section as we are devloping the weekly auto change the  content of tech update section , so the tech updtate will be fixed in V3 update on the special occasion of new yeaar";
     }
-];
 
-const fetchTechnologyNews = () => {
-    const url = `https://newsapi.org/v2/everything?q=technology&apiKey=$33e82c50c24146f39825dee2a1b84eaa,`;
-
-    fetch(url)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok: ' + response.statusText);
-            }
-            return response.json();
-        })
-        .then(data => {
-            if (data.articles.length > 0) {
-                displayArticles(data.articles);
-            } else {
-                showTechUpdates();
-            }
-        })
-        .catch(error => {
-            console.error("Error fetching technology news: ", error);
-            showTechUpdates();
-        });
-};
-
-const displayArticles = (articles) => {
-    const articlesContainer = document.getElementById('articlesContainer');
-    articlesContainer.innerHTML = ''; // Clear previous articles
-
-    articles.forEach(article => {
-        const articleElement = document.createElement('div');
-        articleElement.innerHTML = `<h3>${article.title}</h3>
-                                    <p>${article.description}</p>`;
-        articlesContainer.appendChild(articleElement);
-    });
-};
-
-const showTechUpdates = () => {
-    const techUpdatesContainer = document.getElementById('techUpdatesContainer');
-    techUpdatesContainer.innerHTML = ''; // Clear previous updates
-
-    builtInTechUpdates.forEach(update => {
-        const updateElement = document.createElement('div');
-        updateElement.innerHTML = `<h3>${update.title}</h3>
-                                    <p>${update.description}</p>`;
-        techUpdatesContainer.appendChild(updateElement);
-    });
-};
-
-// addEventListener
-
-document.getElementById('checkForUpdatesButton'),addEventListener(fetchTechnologyNews);
     // =====================
     // Initialization
     // =====================
@@ -1611,5 +1488,6 @@ document.getElementById('checkForUpdatesButton'),addEventListener(fetchTechnolog
       }
     }
   </script>
+
 </body>
 </html>
