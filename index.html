@@ -14,16 +14,21 @@
 
     
 
-    .main-content {
-  overflow: auto; /* Ensure content is scrollable */
-  padding: 20px; /* Adjust as necessary */
-}
-
+    /* Mobile layout */
 @media (max-width: 768px) {
+  .container {
+    display: block; /* Stacks sidebar and main content */
+  }
+
+  .sidebar, .main-content {
+    width: 100%; /* Ensure both take full width */
+  }
+
   .feature-section {
     padding: 10px; /* Reduce padding for mobile */
   }
 }
+
 
 
     /* Sidebar styles */
