@@ -96,7 +96,12 @@
             background-color: #ffffff;
         }
       
+        .body.light .main-content {
+background-color: #e6e6e6;
+color:  #333;  }
+    
     </style>
+
 </head>
 <body>
     
@@ -281,7 +286,8 @@ function logout() {
   <title>School Tools Platform</title>
   <style>
     
-
+   
+    
     /* Hide all sections by default */
     .feature-section {
       display: none;
@@ -596,6 +602,11 @@ body.dark {
     color: #080808; /* White text */
 }
 
+body.dark .main-content {
+background-color: #645d5d; /* Dark background */
+color: #000000; }
+
+
 body.dark .themes-section {
     background-color: #1e1e1e; /* Darker background for sections */
 }
@@ -610,9 +621,13 @@ body.dark .theme-button {
 
 /* Yellow Theme */
 body.yellow {
-    background-color: #fff7e0; /* Light yellow background */
+    background-color: #ffe600; /* Light yellow background */
     color: #333; /* Dark text */
 }
+
+body.yellow .main-content {
+     background-color: #e0d251;
+     color: #333; }
 
 body.yellow .themes-section {
     background-color: #ffe600; /* Bright yellow for sections */
@@ -628,17 +643,19 @@ body.yellow .theme-button {
 
 /* Blue Theme */
 body.blue {
-    background-color: #e0f7fa; /* Light blue background */
-    color: #004d40; /* Dark teal text */
+    background-color: #0066ff; /* Light blue background */
+    color: #ffffff; /* Dark teal text */
 }
 
 body.blue .sidebar {
-    background-color: #00bcd4; /* Cyan sidebar */
+    background-color: #0066ff; /* Cyan sidebar */
     color: #ffffff; /* Set sidebar text color to white for better contrast */
-}
+width: 250px;
+height: 100vh;
+  }
 
 body.blue .main-content {
-    background-color: #e0f7fa; /* Match main content to blue */
+    background-color: #588ee0; /* Match main content to blue */
 }
 
 body.blue .themes-section {
@@ -655,14 +672,21 @@ body.blue .theme-button {
 
 /* Light Theme */
 body.light {
-    background-color: #ffffff; /* Light background */
+    background-color: #fbfbfb; /* Light background */
     color: #333; /* Dark text */
 }
 
+body.light.main-content {
+background-color: #e6e6e6;
+color:  #333;  }
+
+
 body.light .sidebar {
-    background-color: #ffffff; /* White sidebar background */
+    background-color: #dbd5d5; /* White sidebar background */
     color: #333; /* Dark text in sidebar */
     border-right: 1px solid #ddd; /* Optional: border for separation */
+    width: 250px;
+    height: 100vh;
 }
 
 body.light .main-content {
@@ -687,9 +711,10 @@ body.light .main-content {
 
 
 /* Sidebar Styles */
-.sidebar {
-    background-color: #333; /* Default dark background */
+#sidebar {
+    
     padding: 20px;
+    max-width: 250px;
     width: 250px; /* Width of the sidebar */
     position: fixed; /* Fixed positioning for desktop */
     top: 0;
@@ -704,16 +729,22 @@ body.light .main-content {
 
 .sidebar.dark {
     background-color: #1e1e1e; /* Dark sidebar */
+    width: 250px;
+    max-width: 250px;
 }
 
 .sidebar.yellow {
     background-color: #ffe600; /* Yellow sidebar */
     color: #000000; /* Dark text/icons for yellow */
+    width: 250px;
+    max-width: 250px;
 }
 
 .sidebar.blue {
-    background-color: #00bcd4; /* Cyan sidebar */
+    background-color: #0066ff; /* Cyan sidebar */
     color: rgb(0, 0, 0); /* White text/icons for blue */
+    width: 250px;
+    max-width: 250px;
 }
 
 /* Sidebar Icon Styles */
@@ -967,7 +998,9 @@ body.light .main-content {
     <ul id="notesList" style="margin-top: 20px; list-style-type: none;"></ul>
 </div>
 
-  <!-- Themes Section -->
+<div class="divider"></div>  
+
+<!-- Themes Section -->
 <div id="themes" class="feature-section">
     <h2>Themes</h2>
     <button id="choose-theme-button" class="theme-toggle" style="padding: 10px 20px; background-color: #007BFF; color: white; border: none; border-radius: 4px; cursor: pointer;">Choose Theme</button>
@@ -976,10 +1009,10 @@ body.light .main-content {
 
 <div id="theme-menu" class="theme-menu" style="display: none;">
         <ul>
-          <li><button id="dark-theme-button" class="theme-button" data-theme="dark>Dark Theme</button></li>
+            <li><button id="dark-theme-button" class="theme-button" data-theme="dark">Dark Theme</button></li>
             <li><button id="yellow-theme-button" class="theme-button" data-theme="yellow">Yellow Theme</button></li>
             <li><button id="blue-theme-button" class="theme-button" data-theme="blue">Blue Theme</button></li>
-            <li><button id="light-theme-button" class="theme-button" data-theme="light">LightTheme(Default)</button></li>
+            <li><button id="light-theme-button" class="theme-button" data-theme="light">Light Theme(Default)</button></li>
         </ul>
     </div>
 
