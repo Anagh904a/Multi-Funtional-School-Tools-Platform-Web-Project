@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -54,14 +55,7 @@
       margin-bottom: 20px;
     }
 
-    .sidebar a {
-      display: 
-      color: white;
-      padding: 15px 20px;
-      text-decoration: none;
-      margin-bottom: 5px;
-      transition: background 0.3s;
-    }
+    
 
     .sidebar a:hover {
       background-color: #0056b3;
@@ -105,7 +99,13 @@
     </style>
 </head>
 <body>
-    <div id="sidebar">
+    
+  <script>function logout() {
+    window.location.href = "logout.php";
+    }
+
+</script>
+  <div id="sidebar">
         <a href="#" class="sidebar-item" onclick="showSection('task-manager')">
             <i class="fas fa-tasks"></i> Task Manager
         </a>
@@ -135,7 +135,7 @@
 
     <script type="module">
       // Import the functions you need from the SDKs you need
-      import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+      import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
       import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
       import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
       import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-analytics.js";
@@ -160,8 +160,9 @@
       const auth = getAuth(app);
       const analytics = getAnalytics(app);
       const db = getFirestore(app);
-
-     // Authentication Functions
+      
+      
+    // Authentication Functions
 const authContainer = document.getElementById('auth-container');
 const authForm = document.getElementById('auth-form');
 const authTitle = document.getElementById('auth-title');
@@ -222,6 +223,7 @@ authForm.addEventListener('submit', (e) => {
     }
 });
 
+
 // Show App After Login
 function showApp() {
     authContainer.style.display = 'none'; // Hide auth container
@@ -231,6 +233,32 @@ function showApp() {
     updateAuthOption(); // Update the sidebar with the correct option
 
 }
+    
+//dom contenr
+document.addEventListener('DOMContentLoaded'), function() {
+      const resetPasswordForm = document.getElementById('reset-password-form');
+      const resetEmailInput = document.getElementById('reset-email');
+      const forgotPasswordLink = document.getElementById('forgot-password'); 
+    }
+
+    // Handle Reset Password
+    resetPasswordForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const email = resetEmailInput.value;
+
+        // Send password reset email
+        sendPasswordResetEmail(auth, email)
+            .then(() => {
+                alert('Password reset link sent to: ' + email);
+                resetEmailInput.value = '';
+                resetPasswordForm.classList.add('hidden');
+                authForm.classList.remove('hidden');
+            })
+            .catch((error) => {
+                console.error('Error sending password reset email:', error);
+                alert('Error: ' + error.message);
+            });
+    }); 
     
 
 // Logout Function
@@ -261,55 +289,92 @@ function logout() {
     }
 
     /* Login/Register Styles */
-    .auth-container {
-      max-width: 400px;
-      margin: 100px auto;
-      padding: 30px;
-      background-color: #ffffff;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    }
+.auth-container {
+    max-width: 400px;
+    margin: 100px auto;
+    padding: 30px;
+    background-color: #ffffff; /* Original background */
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
 
-    .auth-container h2 {
-      text-align: center;
-      margin-bottom: 20px;
-    }
+.auth-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 24px; /* Adjust font size as needed */
+}
 
-    .auth-container form {
-      display: flex;
-      flex-direction: column;
-    }
+.auth-container form {
+    display: flex;
+    flex-direction: column;
+    margin: 20px 0; /* Added margin */
+}
 
-    .auth-container form input {
-      padding: 10px;
-      margin-bottom: 15px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-    }
 
-    .auth-container form button {
-      padding: 10px;
-      background-color: #007BFF;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
+.auth-container form input[type="password"],
+.auth-container form input[type="email"] {
+    padding: 10px;
+    border: 1px solid var(--color-light-gray); /* Use the specified variable */
+    border-radius: 4px;
+    margin-bottom: 16px;
+    font-size: 14px; /* Font size adjustment */
+}
 
-    .auth-container form button:hover {
-      background-color: #0056b3;
-    }
+.auth-container form button {
+    padding: 10px;
+    background-color: rgb(95, 95, 173); /* Use the specified variable */
+    color: rgb(255, 255, 255);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s; /* Transition effect */
+}
 
-    .toggle-link {
-      text-align: center;
-      margin-top: 10px;
-      color: #007BFF;
-      cursor: pointer;
-    }
+.auth-container form button:hover {
+    background-color: rgb(0, 0, 236) /* Use the specified variable */
+}
 
-    .toggle-link:hover {
-      text-decoration: underline;
-    }
+.forgot-password {
+    color: rgb(91, 91, 207);
+    text-decoration: none;
+}
+
+.forgot-password:hover {
+    text-decoration: underline;
+}
+
+.register-prompt {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.register-link {
+    color: rgb(67, 67, 245);
+    text-decoration: none;
+}
+
+.register-link:hover {
+    text-decoration: underline;
+}
+
+.error-message {
+    color: var(--text-error);
+    font-size: 12px;
+    margin-top: -5px;
+    margin-bottom: 10px;
+}
+
+.toggle-link {
+    text-align: center;
+    margin-top: 10px;
+    color: #007BFF; /* Original link color */
+    cursor: pointer;
+}
+
+.toggle-link:hover {
+    text-decoration: underline;
+}
+
 
     /* Sidebar Styles */
      
@@ -370,8 +435,8 @@ function logout() {
       margin-left: 250px;
       padding: 40px;
       height: 100vh
-      flex-grow: 1;
-      display: none; /* Hidden by default, shown after login */
+    
+       /* Hidden by default, shown after login */
       
     }
 
@@ -528,7 +593,7 @@ function logout() {
 /* Default Dark Theme */
 body.dark {
     background-color: #4d4c4c; /* Dark background */
-    color: #ffffff; /* White text */
+    color: #080808; /* White text */
 }
 
 body.dark .themes-section {
@@ -624,7 +689,6 @@ body.light .main-content {
 /* Sidebar Styles */
 .sidebar {
     background-color: #333; /* Default dark background */
-    color: white; /* Default white text/icons */
     padding: 20px;
     width: 250px; /* Width of the sidebar */
     position: fixed; /* Fixed positioning for desktop */
@@ -644,17 +708,17 @@ body.light .main-content {
 
 .sidebar.yellow {
     background-color: #ffe600; /* Yellow sidebar */
-    color: #0c0c0c; /* Dark text/icons for yellow */
+    color: #000000; /* Dark text/icons for yellow */
 }
 
 .sidebar.blue {
     background-color: #00bcd4; /* Cyan sidebar */
-    color: rgb(245, 240, 240); /* White text/icons for blue */
+    color: rgb(0, 0, 0); /* White text/icons for blue */
 }
 
 /* Sidebar Icon Styles */
 .sidebar-icon {
-    color: white; /* Default white for icons */
+    color: rgb(0, 0, 0); /* Default white for icons */
 }
 
 .sidebar.yellow .sidebar-icon {
@@ -756,6 +820,13 @@ body.light .main-content {
       <button type="submit" id="auth-button">Login</button>
     </form>
     <div class="toggle-link" id="toggle-link">Don't have an account? Register here.</div>
+    <div class="toggle-link">
+                    <a href="#" id="forgot-password">Forgot Password?</a>
+                </div>
+  
+                
+                
+                
   </div>
 
   
@@ -876,23 +947,7 @@ body.light .main-content {
     </div>
 </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const aboutLink = document.getElementById('about-link');
-            const aboutSection = document.getElementById('about-section');
-
-            aboutLink.onclick = function(event) {
-                event.preventDefault(); // Prevent the default link behavior
-
-                // Toggle visibility of the about section
-                if (aboutSection.style.display === 'none' || aboutSection.style.display === '') {
-                    aboutSection.style.display = 'block'; // Show the section
-                } else {
-                    aboutSection.style.display = 'none'; // Hide the section
-                }
-            };
-        });
-    </script>
+    
     
     <!-- Tech Updates Section -->
     <div id="tech-updates" class="feature-section">
@@ -921,10 +976,10 @@ body.light .main-content {
 
 <div id="theme-menu" class="theme-menu" style="display: none;">
         <ul>
-          <li><button id="dark-theme-button" class="theme-button" data-theme="dark">Dark (Default)</button></li>
+          <li><button id="dark-theme-button" class="theme-button" data-theme="dark>Dark Theme</button></li>
             <li><button id="yellow-theme-button" class="theme-button" data-theme="yellow">Yellow Theme</button></li>
             <li><button id="blue-theme-button" class="theme-button" data-theme="blue">Blue Theme</button></li>
-            <li><button id="light-theme-button" class="theme-button" data-theme="light">Light Theme</button></li>
+            <li><button id="light-theme-button" class="theme-button" data-theme="light">LightTheme(Default)</button></li>
         </ul>
     </div>
 
