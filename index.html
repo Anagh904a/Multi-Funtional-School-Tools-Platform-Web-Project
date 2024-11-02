@@ -16,17 +16,18 @@
 
     /* Mobile layout */
 @media (max-width: 768px) {
-  .container {
-    display: block; /* Stacks sidebar and main content */
-  }
-
-  .sidebar, .main-content {
-    width: 100%; /* Ensure both take full width */
-  }
-
-  .feature-section {
-    padding: 10px; /* Reduce padding for mobile */
-  }
+    .container {
+        display: flex;
+        flex-direction: column; /* Stack sidebar and content vertically */
+    }
+    .sidebar {
+        order: 1; /* Adjust order if you want sidebar first or last */
+        width: 100%; /* Make sidebar full width */
+    }
+    .main-content {
+        order: 2;
+        width: 100%; /* Make main content full width */
+    }
 }
 
 
