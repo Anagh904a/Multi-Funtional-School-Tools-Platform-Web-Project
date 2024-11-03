@@ -176,19 +176,27 @@ color:  #333;  }
             const authTitle = document.getElementById('auth-title');
             const authButton = document.getElementById('auth-button');
             const toggleLink = document.getElementById('toggle-link');
+            const closeButton = document.getElementById('close-button');
             const loadingIndicator = document.getElementById('loading-indicator');
             let isLogin = true; // Track whether the user is logging in or registering
+
+            // Check if there's a logged-in user in local storage
+            const storedUser = JSON.parse(localStorage.getItem('user'));
+            if (storedUser) {
+                closeButton.style.display = 'block'; // Show the close button if a user is stored
+            }
 
             // Check for the current user and update UI
             auth.onAuthStateChanged((user) => {
                 if (user) {
                     // User is logged in
                     localStorage.setItem('user', JSON.stringify({ uid: user.uid, email: user.email }));
-                    showApp();
+                    closeButton.style.display = 'block'; // Show the close button if a user is store
                 } else {
                     // User is logged out
                     localStorage.removeItem('user');
                     authContainer.style.display = 'block'; // Show the auth container
+                    closeButton.style.display = 'none'; // Hide the close button
                 }
             });
 
@@ -230,7 +238,9 @@ color:  #333;  }
                         if (isLogin) {
                             // Store user in local storage
                             localStorage.setItem('user', JSON.stringify({ uid: user.uid, email: user.email }));
-                            showApp(); // Show the main app after login
+                            alert('Logged in successfully!'); // Alert for successful login
+                            authContainer.style.display = 'none'; // Hide the auth container
+                            closeButton.style.display = 'block'; // Show close button
                         } else {
                             alert('Registration successful! You can now log in.');
                             toggleLink.click(); // Switch to login mode
@@ -242,6 +252,12 @@ color:  #333;  }
                     .finally(() => {
                         loadingIndicator.style.display = 'none'; // Hide loading indicator
                     });
+            });
+
+            // Close button functionality
+            closeButton.addEventListener('click', () => {
+                // Hide the auth container
+                authContainer.style.display = 'none';
             });
 
             // Error handling function
@@ -266,18 +282,25 @@ color:  #333;  }
 
             // Show the main app after login
             function showApp() {
-                if (authContainer) {
-                    authContainer.style.display = 'none'; // Hide auth container
-                }
                 const sidebar = document.getElementById('sidebar');
                 const mainContent = document.getElementById('main-content');
-                
+
                 if (sidebar && mainContent) {
                     sidebar.style.display = 'block'; // Show sidebar
                     mainContent.style.display = 'block'; // Show main content
                 } else {
                     console.error('Sidebar or main content elements not found.');
                 }
+            }
+
+            // Handle click event for the close button when no user is stored
+            if (!storedUser) {
+                closeButton.style.display = 'none'; // Ensure the close button is hidden
+                authForm.addEventListener('submit', (e) => {
+                    if (!storedUser) {
+                        alert('Please log in or register to access exclusive features and become a pro user for free and access messenger.');
+                    }
+                });
             }
         
     
@@ -300,7 +323,7 @@ alert("Create account or login")
         function updateUserProfile(user) {
             const Email = user.email; }
 
-            //funtion to updtae profile section
+            //to updtae profile section
             document.getElememtById("email").textContent = Email;
 
 
@@ -950,6 +973,7 @@ body.light .main-content {
       <input type="email" id="email" placeholder="Email" required>
       <input type="password" id="password" placeholder="Password" required>
       <button type="submit" id="auth-button">Login</button>
+      <button type="button" id="close-button" style="display:none;">Close</button>
     </form>
     <div class="toggle-link" id="toggle-link">Don't have an account? Register here.</div>
     <div id="loading-indicator" style="display:none;">Loading... </div>
