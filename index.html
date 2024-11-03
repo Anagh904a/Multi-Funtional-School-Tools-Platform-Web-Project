@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,22 +14,16 @@
 
     
 
-    /* Mobile layout */
-@media (max-width: 768px) {
-    .container {
-        display: flex;
-        flex-direction: column; /* Stack sidebar and content vertically */
-    }
-    .sidebar {
-        order: 1; /* Adjust order if you want sidebar first or last */
-        width: 100%; /* Make sidebar full width */
-    }
     .main-content {
-        order: 2;
-        width: 100%; /* Make main content full width */
-    }
+  overflow: auto; /* Ensure content is scrollable */
+  padding: 20px; /* Adjust as necessary */
 }
 
+@media (max-width: 768px) {
+  .feature-section {
+    padding: 10px; /* Reduce padding for mobile */
+  }
+}
 
 
     /* Sidebar styles */
@@ -110,6 +105,11 @@ color:  #333;  }
 </head>
 <body>
     
+  <script>function logout() {
+    window.location.href = "logout.php";
+    }
+
+</script>
   <div id="sidebar">
         <a href="#" class="sidebar-item" onclick="showSection('task-manager')">
             <i class="fas fa-tasks"></i> Task Manager
@@ -133,14 +133,17 @@ color:  #333;  }
             <a href="#" class="sidebar-item" onclick="showSection('about-website')">
               <i class="fas fa-info-circle"></i> About Website
        
-            <a href="#" class="sidebar-item" onclick="logout()">
+              <a href="#" class="sidebar-item" onclick="showSection('user-profile')">
+                <i class="fas fa-user-circle"></i> Profile
+            
+              <a href="#" class="sidebar-item" onclick="logout()">
                 <i class="fas fa-sign-out-alt"></i> Logout   
         </a>
     </div>
 
     <script type="module">
       // Import the functions you need from the SDKs you need
-      import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, OnAuthStateChanged, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+      import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
       import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
       import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
       import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-analytics.js";
@@ -166,9 +169,120 @@ color:  #333;  }
       const analytics = getAnalytics(app);
       const db = getFirestore(app);
       const user = auth.currentuser;
-            
-      //runs everytime when user is login
-            onAuthStateChanged(auth, (user) {
+      
+      // Authentication Functions
+      const authContainer = document.getElementById('auth-container');
+            const authForm = document.getElementById('auth-form');
+            const authTitle = document.getElementById('auth-title');
+            const authButton = document.getElementById('auth-button');
+            const toggleLink = document.getElementById('toggle-link');
+            const loadingIndicator = document.getElementById('loading-indicator');
+            let isLogin = true; // Track whether the user is logging in or registering
+
+            // Check for the current user and update UI
+            auth.onAuthStateChanged((user) => {
+                if (user) {
+                    // User is logged in
+                    localStorage.setItem('user', JSON.stringify({ uid: user.uid, email: user.email }));
+                    showApp();
+                } else {
+                    // User is logged out
+                    localStorage.removeItem('user');
+                    authContainer.style.display = 'block'; // Show the auth container
+                }
+            });
+
+            // Toggle between Login and Register modes
+            toggleLink.addEventListener('click', () => {
+                isLogin = !isLogin;
+                authTitle.textContent = isLogin ? 'Login' : 'Register';
+                authButton.textContent = isLogin ? 'Login' : 'Register';
+                toggleLink.textContent = isLogin ? "Don't have an account? Register here." : "Already have an account? Login here.";
+            });
+
+            // Validate email format
+            function isValidEmail(email) {
+                const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return re.test(email);
+            }
+
+            // Handle form submission for login or registration
+            authForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const email = document.getElementById('email').value.trim();
+                const password = document.getElementById('password').value.trim();
+
+                // Input validation
+                if (!isValidEmail(email) || password.length < 6) {
+                    alert('Please enter a valid email and ensure the password is at least 6 characters long.');
+                    return;
+                }
+
+                loadingIndicator.style.display = 'block'; // Show loading indicator
+
+                // Determine whether to log in or register
+                const authAction = isLogin ? signInWithEmailAndPassword(auth, email, password) : createUserWithEmailAndPassword(auth, email, password);
+
+                authAction
+                    .then((userCredential) => {
+                        const user = userCredential.user;
+                        console.log('User:', user);
+                        if (isLogin) {
+                            // Store user in local storage
+                            localStorage.setItem('user', JSON.stringify({ uid: user.uid, email: user.email }));
+                            showApp(); // Show the main app after login
+                        } else {
+                            alert('Registration successful! You can now log in.');
+                            toggleLink.click(); // Switch to login mode
+                        }
+                    })
+                    .catch((error) => {
+                        handleAuthError(error); // Enhanced error handling
+                    })
+                    .finally(() => {
+                        loadingIndicator.style.display = 'none'; // Hide loading indicator
+                    });
+            });
+
+            // Error handling function
+            function handleAuthError(error) {
+                switch (error.code) {
+                    case 'auth/user-not-found':
+                        alert('No user found with this email.');
+                        break;
+                    case 'auth/wrong-password':
+                        alert('Incorrect password. Please try again.');
+                        break;
+                    case 'auth/email-already-in-use':
+                        alert('This email is already registered.');
+                        break;
+                    case 'auth/invalid-email':
+                        alert('Please enter a valid email address.');
+                        break;
+                    default:
+                        alert('Error: ' + error.message);
+                }
+            }
+
+            // Show the main app after login
+            function showApp() {
+                if (authContainer) {
+                    authContainer.style.display = 'none'; // Hide auth container
+                }
+                const sidebar = document.getElementById('sidebar');
+                const mainContent = document.getElementById('main-content');
+                
+                if (sidebar && mainContent) {
+                    sidebar.style.display = 'block'; // Show sidebar
+                    mainContent.style.display = 'block'; // Show main content
+                } else {
+                    console.error('Sidebar or main content elements not found.');
+                }
+            }
+        
+    
+//runs everytime when user is login
+onAuthStateChanged(auth, (user) => {
                 console.log(user)
 if (user) {
 // User is signed in, call the updateUserProfile function
@@ -183,90 +297,12 @@ alert("Create account or login")
 });
             
       //funtion to update tye iser profile
-        funtion updateUserProfile(user) {
-            const Email = user.email;
+        function updateUserProfile(user) {
+            const Email = user.email; }
 
             //funtion to updtae profile section
-            document.getElememtById("Email").textContent = Email;
-    
-        // Authentication Functions
-const authContainer = document.getElementById('auth-container');
-const authForm = document.getElementById('auth-form');
-const authTitle = document.getElementById('auth-title');
-const authButton = document.getElementById('auth-button');
-const toggleLink = document.getElementById('toggle-link');
-let isLogin = true; // Track whether the user is logging in or registering
+            document.getElememtById("email").textContent = Email;
 
-toggleLink.addEventListener('click', () => {
-    isLogin = !isLogin;
-    if (isLogin) {
-        authTitle.textContent = 'Login';
-        authButton.textContent = 'Login';
-        toggleLink.textContent = "Don't have an account? Register here.";
-    } else {
-        authTitle.textContent = 'Register';
-        authButton.textContent = 'Register';
-        toggleLink.textContent = "Already have an account? Login here.";
-    }
-});
-
-authForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const email = document.getElementById('email').value.trim();
-    const password = document.getElementById('password').value.trim();
-
-    if (isLogin) {
-        // Login Process
-        signInWithEmailAndPassword(auth, email, password)
-    .then((userCredential) => {
-        const user = userCredential.user;
-        console.log('User logged in:', user);
-        console.log('Showing app...');
-        showApp(); // Function to show the main app after login
-        console.log('App shown');
-        
-    })
-
-    .catch((error) => {
-                const errorMessage = error.message;
-                alert('Login Failed: ' + errorMessage);
-            });
-    } else {
-        // Registration Process
-        createUserWithEmailAndPassword(auth, email, password)
-            .then((userCredential) => {
-                const user = userCredential.user;
-                console.log('User registered:', user);
-                alert('Registration successful! You can now log in.');
-                isLogin = true; // Switch to login mode
-                authTitle.textContent = 'Login';
-                authButton.textContent = 'Login';
-                toggleLink.textContent = "Don't have an account? Register here.";
-            })
-            .catch((error) => {
-                const errorMessage = error.message;
-                alert('Registration failed: ' + errorMessage);
-            });
-    }
-});
-
-
-// Show App After Login
-function showApp() {
-    authContainer.style.display = 'none'; // Hide auth container
-    document.getElementById('sidebar').style.display = 'block'; // Show sidebar
-    document.getElementById('main-content').style.display = 'block'; // Show main content
-    document.getElementById(authContainer).style.display = 'hide';
-    updateAuthOption(); // Update the sidebar with the correct option
-
-}
-    
-//dom contenr
-document.addEventListener('DOMContentLoaded'), function() {
-      const resetPasswordForm = document.getElementById('reset-password-form');
-      const resetEmailInput = document.getElementById('reset-email');
-      const forgotPasswordLink = document.getElementById('forgot-password'); 
-    }
 
     // Handle Reset Password
     resetPasswordForm.addEventListener('submit', function(e) {
@@ -287,17 +323,44 @@ document.addEventListener('DOMContentLoaded'), function() {
             });
     }); 
     
+// Function to display user profile information
+function displayUserProfile(user) {
+    const userEmail = document.getElementById('user-email');
+    const userDisplayName = document.getElementById('user-display-name');
+    const userPhoto = document.getElementById('user-photo');
 
-// Logout Function
-function logout() {
+    if (user) {
+        userEmail.textContent = user.email;
+        userDisplayName.textContent = user.displayName || "No display name";
+        if (user.photoURL) {
+            userPhoto.src = user.photoURL;
+            userPhoto.style.display = "block"; // Show the image if it exists
+        } else {
+            userPhoto.style.display = "none"; // Hide the image if it doesn't exist
+        }
+    } else {
+        // User is signed out
+        userEmail.textContent = "No user is logged in.";
+        userDisplayName.textContent = "";
+        userPhoto.style.display = "none";
+    }
+}
+
+// Monitor authentication state
+onAuthStateChanged(auth, (user) => {
+    displayUserProfile(user);
+});
+
+
+// Logout function
+document.getElementById('logout-btn').addEventListener('click', () => {
     signOut(auth).then(() => {
         alert('Logged out successfully');
-        location.reload(); // Reload the page to show the login form again
+        // Optionally redirect to login page or refresh
     }).catch((error) => {
-        const errorMessage = error.message;
-        alert('Logout failed: ' + errorMessage);
+        console.error('Logout failed:', error.message);
     });
-}
+});
     
     </script>
 
@@ -316,6 +379,22 @@ function logout() {
       padding: 20px;
     }
 
+    #profile-section {
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+#user-info {
+    margin-bottom: 20px;
+}
+
+#user-info p {
+    font-size: 1.2rem;
+    margin: 5px 0;
+}
+    
     /* Login/Register Styles */
 .auth-container {
     max-width: 400px;
@@ -766,7 +845,7 @@ body.light .main-content {
     background-color: #0066ff; /* Cyan sidebar */
     color: rgb(0, 0, 0); /* White text/icons for blue */
     width: 250px;
-    max-width: 250px;
+    max-width: 250px;    
 }
 
 /* Sidebar Icon Styles */
@@ -873,14 +952,11 @@ body.light .main-content {
       <button type="submit" id="auth-button">Login</button>
     </form>
     <div class="toggle-link" id="toggle-link">Don't have an account? Register here.</div>
-    <div class="toggle-link">
-                    <a href="#" id="forgot-password">Forgot Password?</a>
-                </div>
-  
-                
-                
-                
+    <div id="loading-indicator" style="display:none;">Loading... </div>
+    <div id="sidebar" style="display:none;">Sidebar</div>
+    <div id="main-content" style="display:none;">Main Content</div>
   </div>
+  
 
   
 
@@ -1000,7 +1076,15 @@ body.light .main-content {
     </div>
 </div>
 
-    
+<!-- Profile Section -->
+<div id="user-profile" class="feature-section" style="display: none;">
+    <h2>User Profile</h2>
+    <div id="user-info">
+        <p><strong>Email:</strong> <span id="user-email"></span></p>
+        </div>
+    <button id="logout-btn" class="standard-button">Logout</button>
+</div>
+
     
     <!-- Tech Updates Section -->
     <div id="tech-updates" class="feature-section">
