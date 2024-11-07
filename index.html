@@ -840,14 +840,24 @@ body.light .main-content {
     padding: 20px;
     max-width: 250px;
     width: 250px; /* Width of the sidebar */
-     top: 0;
+    position: fixed;
+    top: 0;
     left: 0; /* Align to the left */
     height: 100%; /* Full height */
     overflow-y: auto; /* Enable scrolling if needed */
     transition: background-color 0.3s, color 0.3s; /* Smooth transition for colors */
 }
 
-
+@media {
+    padding: 20px;
+    max-width: 250px;
+    width: 250px; /* Width of the sidebar */
+    top: 0;
+    left: 0; /* Align to the left */
+    height: 100%; /* Full height */
+    overflow-y: auto; /* Enable scrolling if needed */
+    transition: background-color 0.3s, color 0.3s; /* Smooth transition for colors */
+}
 
 
 .sidebar.dark {
